@@ -51,6 +51,4 @@ The Resource Recommender comprises several key components:
 
 Contributions are welcome! If you encounter any issues or have suggestions for improvement, please submit a pull request or open an issue.
 
---- 
 
-This should provide a comprehensive overview for users and contributors on GitHub! Let me know if there’s anything specific you’d like to add or adjust.
