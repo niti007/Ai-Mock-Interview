@@ -1,50 +1,51 @@
 
 # AI Mock Interview Assistant
 
-The AI Mock Interview Assistant is a Python application that provides personalized mock interviews based on a user's resume, job description, and the type of interview they select(technical, behavioral, and competency-based). Using natural language processing techniques, it analyzes the data and conducts mock interviews. Once the interview is finished, it gives you a summary of how well you answered the question and where you can improve.
+The AI Mock Interview Assistant is a Python application that provides personalized mock interviews based on a user's resume, job description, and the selected type of interview (technical, behavioral, or competency-based). Utilizing natural language processing, it analyzes data to conduct mock interviews, followed by a summary that highlights strengths and areas for improvement in responses.
 
 ## Features
 
-- **Resume and Job Description Parsing**: Parses resumes (PDF or DOCX) and job descriptions to extract key details like skills, experience, education, and job requirements.
-  
-- **Interview Question generator**: Generate questions based on the type of interview selected and take youe cv and JD into context to generate question
+- **Resume and Job Description Parsing**: Parses resumes (PDF or DOCX) and job descriptions to extract essential details, including skills, experience, education, and job requirements.
 
-- **Summary Analysis of the answers**: Creates tailored technical, behavioral, competency-based, and general interview questions derived from the resume and job description.
+- **Interview Question Generator**: Generates interview questions tailored to the selected interview type, considering information from the resume and job description to create context-relevant questions.
+
+- **Answer Summary Analysis**: Evaluates responses and provides feedback on technical, behavioral, competency-based, and general interview questions derived from the resume and job description.
 
 ## Usage
 
 1. **Install Dependencies**:
-
    ```bash
    pip install -r requirements.txt
    ```
 
 2. **Run the Application**:
-
    ```bash
    python -m streamlit run app.py
    ```
 
-3. **Follow On-Screen Instructions**: Upload your resume and job description, and provide interview performance data to receive customized recommendations and interview questions.
+3. **Follow On-Screen Instructions**: Upload your resume and job description, then provide interview responses to receive customized recommendations, feedback, and targeted interview questions.
 
 ## Architecture
 
-The AI Mock Interview Assistant comprises several key components:
+The AI Mock Interview Assistant consists of several key components:
 
 - **CVParser**: Extracts relevant details from resumes, including skills, experience, and education.
-  
+
 - **JobDescriptionParser**: Extracts required skills, responsibilities, and qualifications from job descriptions.
 
-- **ResourceRecommender**: Combines parsed data and interview performance to generate personalized resource recommendations.
+- **ResourceRecommender**: Uses parsed data and interview performance to generate personalized resource recommendations based on skill development needs and interview feedback.
 
-- **QuestionGenerator**: Produces interview questions tailored to technical, behavioral, and competency-based interview types.
+- **QuestionGenerator**: Produces tailored interview questions for technical, behavioral, and competency-based interviews.
 
-- **Answer Evaluator**: Evaluates your answer and provide you a detailed feedback.
+- **Answer Evaluator**: Assesses responses and provides detailed feedback, highlighting areas for improvement.
 
-- **Streamlit UI**: Provides an interactive and user-friendly interface.
+- **Streamlit UI**: Provides an interactive, user-friendly interface for the mock interview process.
 
 ## Contributing
 
-Contributions are welcome! If you encounter any issues or have suggestions for improvement, please submit a pull request or open an issue.
+Contributions are welcome! If you encounter issues or have suggestions for improvement, please submit a pull request or open an issue.
 
+## License
+
+© 2024 AI Mock Interview Assistant. All rights reserved. Licensed under the MIT License. See `LICENSE` for details.
 
