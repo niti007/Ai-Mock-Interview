@@ -7,7 +7,7 @@ The AI Mock Interview Assistant is a Python application that provides personaliz
 
 - **Resume and Job Description Parsing**: Parses resumes (PDF or DOCX) and job descriptions to extract key details like skills, experience, education, and job requirements.
   
-- **Interview Question generator **: Generate questions based on the type of interview selected and take youe cv and JD into context to generate question
+- **Interview Question generator**: Generate questions based on the type of interview selected and take youe cv and JD into context to generate question
 
 - **Summary Analysis of the answers**: Creates tailored technical, behavioral, competency-based, and general interview questions derived from the resume and job description.
 
@@ -38,6 +38,8 @@ The AI Mock Interview Assistant comprises several key components:
 - **ResourceRecommender**: Combines parsed data and interview performance to generate personalized resource recommendations.
 
 - **QuestionGenerator**: Produces interview questions tailored to technical, behavioral, and competency-based interview types.
+
+- **Answer Evaluator**: Evaluates your answer and provide you a detailed feedback.
 
 - **Streamlit UI**: Provides an interactive and user-friendly interface.
 
