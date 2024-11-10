@@ -29,7 +29,7 @@ The AI Mock Interview Assistant is a Python application that provides personaliz
 
 ## Architecture
 
-The Resource Recommender comprises several key components:
+The AI Mock Interview Assistant comprises several key components:
 
 - **CVParser**: Extracts relevant details from resumes, including skills, experience, and education.
   
