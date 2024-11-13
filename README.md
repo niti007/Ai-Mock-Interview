@@ -47,5 +47,5 @@ Contributions are welcome! If you encounter issues or have suggestions for impro
 
 ## License
 
-© 2024 AI Mock Interview Assistant. All rights reserved. Licensed under the MIT License. See `LICENSE` for details.
+© 2024 AI Mock Interview Assistant. All rights reserved. Licensed under the MIT License.
 
