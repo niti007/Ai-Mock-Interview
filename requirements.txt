@@ -7,3 +7,4 @@ pandas==2.0.2
 pypdf2
 python-docx
 spacy
+pdfplumber
