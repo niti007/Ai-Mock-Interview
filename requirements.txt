@@ -6,3 +6,4 @@ langchain_groq==0.1.9
 pandas==2.0.2
 pypdf2
 python-docx
+spacy
