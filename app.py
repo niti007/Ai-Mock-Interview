@@ -62,6 +62,7 @@ def initialize_session_state():
         'question_generator': None,
         'answer_evaluator': None,
         'current_answer': '',
+        'interview_session': {'answers': []},
         'answer_submitted': False  # New flag to track answer submission
     }
 
