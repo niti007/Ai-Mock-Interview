@@ -6,6 +6,8 @@ import os
 from dotenv import load_dotenv
 import logging
 import re
+import random
+import time
 
 # Configure logging
 logging.basicConfig(
@@ -51,38 +53,29 @@ class QuestionGenerator:
         # Define prompts for different question types
         self.type_prompts = {
             QuestionType.TECHNICAL: """
-You are an experienced technical interviewer. Generate exactly 15 technical interview questions based on the following context:
+You are an experienced technical interviewer. Generate exactly 15 UNIQUE and DIFFERENT technical interview questions. 
+Ensure these questions are different from previous attempts.
 
 Technical Skills Required: {technical_stack}
 Candidate Background: {cv_context}
 Job Requirements: {jd_context}
 
-Rules for generating questions:
-1. Questions should test practical coding and problem-solving skills
-2. Include questions about system design and architecture
-3. Focus on the specific technical stack mentioned
-4. Match the complexity to the candidate's experience level
-5. Each question should be clear and specific
-6. Include questions about handling scalability or performance
-7. Add questions about testing and code quality
-8. Include questions about debugging and troubleshooting
-9. Add questions about security best practices
-10. Cover design patterns and architectural principles
+Additional rules for variety:
+1. Mix different difficulty levels
+2. Include both theoretical and practical questions
+3. Vary the format (multiple choice, open-ended, scenario-based)
+4. Cover different aspects of each technology
+5. Include some unexpected but relevant questions
+
+[Previous prompts may have generated similar questions, ensure these are completely different]
 
 Format the output exactly as follows:
 1. First question here
 2. Second question here
-[...and so on until 15 questions]
-
-Remember:
-- Generate exactly 15 questions
-- Number each question from 1 to 15
-- Keep questions concise but specific
-- Focus on practical scenarios
-- Ensure questions are appropriate for the candidate's level""",
+[...and so on until 15 questions]""",
 
             QuestionType.BEHAVIORAL: """
-You are an experienced HR interviewer. Generate exactly 15 behavioral interview questions based on the following context:
+You are an experienced HR interviewer. Generate exactly 15 UNIQUE and DIFFERENT behavioral interview questions based on the following context:
 
 Candidate Background: {cv_context}
 Job Requirements: {jd_context}
@@ -102,17 +95,10 @@ Rules for generating questions:
 Format the output exactly as follows:
 1. First question here
 2. Second question here
-[...and so on until 15 questions]
-
-Remember:
-- Generate exactly 15 questions
-- Number each question from 1 to 15
-- Start questions with "Tell me about a time when..." or similar phrases
-- Focus on specific situations and experiences
-- Ensure questions allow for STAR method responses""",
+[...and so on until 15 questions]""",
 
             QuestionType.COMPETENCY: """
-You are an experienced competency-based interviewer. Generate exactly 15 competency-based questions using the following context:
+You are an experienced competency-based interviewer. Generate exactly 15 UNIQUE and DIFFERENT competency-based questions using the following context:
 
 Candidate Background: {cv_context}
 Job Requirements: {jd_context}
@@ -132,23 +118,24 @@ Rules for generating questions:
 Format the output exactly as follows:
 1. First question here
 2. Second question here
-[...and so on until 15 questions]
-
-Remember:
-- Generate exactly 15 questions
-- Number each question from 1 to 15
-- Focus on demonstrable competencies
-- Ask for specific examples and scenarios
-- Ensure questions reveal measurable outcomes"""
+[...and so on until 15 questions]"""
         }
         logger.info("Question templates initialized")
 
-    def _prepare_context(self, resume_info: Optional[Dict],
-                         job_description: Optional[Dict],
-                         technical_stack: Optional[List[str]] = None) -> Dict:
-        """
-        Prepare context for question generation
-        """
+        # Initialize a set to track previously generated questions
+        self.previous_questions = set()
+        self.max_history = 1000  # Maximum number of questions to remember
+
+    def _get_dynamic_temperature(self):
+        """Generate a random temperature for more variability"""
+        return random.uniform(0.7, 0.9)
+
+    def _get_random_seed(self):
+        """Generate a random seed based on timestamp"""
+        return int(time.time() * 1000)
+
+    def _prepare_context(self, resume_info: Optional[Dict], job_description: Optional[Dict], technical_stack: Optional[List[str]] = None) -> Dict:
+        """Prepare context for question generation"""
         logger.debug("Preparing context for question generation")
         logger.debug(f"Resume info: {resume_info}")
         logger.debug(f"Job description: {job_description}")
@@ -188,17 +175,36 @@ Remember:
         logger.debug(f"Prepared context: {context}")
         return context
 
+    def _is_question_unique(self, question: str) -> bool:
+        """Check if a question is unique"""
+        return question not in self.previous_questions
+
+    def _add_to_history(self, question: str):
+        """Add question to history"""
+        self.previous_questions.add(question)
+        if len(self.previous_questions) > self.max_history:
+            self.previous_questions.pop()
+
     def _generate_with_groq(self, prompt: str) -> List[str]:
-        """
-        Generate questions using Groq LLM synchronously with improved error handling
-        """
+        """Generate questions using Groq LLM with dynamic parameters"""
         logger.debug(f"Generating questions with prompt length: {len(prompt)}")
         try:
-            # Add debug logging for the prompt
-            logger.debug(f"Sending prompt to Groq: {prompt[:200]}...")
+            # Set dynamic temperature
+            temperature = self._get_dynamic_temperature()
+            # Add timestamp and random seed to prompt
+            seed = self._get_random_seed()
+            enhanced_prompt = f"""[Seed: {seed}]
+            Generate unique and different questions for this attempt.
+            {prompt}"""
 
-            # Convert the prompt to a message format
-            messages = [{"role": "user", "content": prompt}]
+            # Update LLM parameters
+            self.llm = ChatGroq(
+                groq_api_key=self.api_key,
+                model_name="llama-3.2-90b-text-preview",
+                temperature=temperature
+            )
+
+            messages = [{"role": "user", "content": enhanced_prompt}]
             response = self.llm.invoke(messages)
 
             # Log the raw response for debugging
@@ -209,12 +215,16 @@ Remember:
             for line in response.content.strip().split('\n'):
                 line = line.strip()
                 # Improved number detection regex
-                if line and re.match(r'^\d{1,2}[\.\)]', line):
+                if line and re.match(r'^\d{1,2}[\.$$]', line):
                     try:
                         # Extract question after the number and any delimiter
-                        question = re.split(r'^\d{1,2}[\.\)]\s*', line)[1].strip()
-                        questions.append(question)
-                        logger.debug(f"Successfully extracted question: {question}")
+                        question = re.split(r'^\d{1,2}[\.$$]\s*', line)[1].strip()
+                        if self._is_question_unique(question):
+                            questions.append(question)
+                            self._add_to_history(question)
+                        else:
+                            logger.debug(f"Duplicate question found: {question}")
+                            continue
                     except IndexError:
                         logger.warning(f"Failed to parse line: {line}")
                         continue
@@ -240,14 +250,8 @@ Remember:
             default_questions = [f"Default question {i + 1}" for i in range(15)]
             return default_questions
 
-    def generate_questions(self,
-                           question_type: str,
-                           resume_info: Optional[Dict] = None,
-                           job_description: Optional[Dict] = None,
-                           technical_stack: Optional[List[str]] = None) -> List[str]:
-        """
-        Generate interview questions based on type and context with improved error handling
-        """
+    def generate_questions(self, question_type: str, resume_info: Optional[Dict] = None, job_description: Optional[Dict] = None, technical_stack: Optional[List[str]] = None) -> List[str]:
+        """Generate interview questions based on type and context with improved error handling"""
         logger.info(f"Generating questions of type: {question_type}")
         try:
             # Validate inputs
@@ -263,8 +267,7 @@ Remember:
                 q_type = QuestionType(question_type.lower())
             except ValueError as e:
                 logger.error(f"Invalid question type: {question_type}")
-                raise ValueError(
-                    f"Invalid question type: {question_type}. Must be one of {[t.value for t in QuestionType]}")
+                raise ValueError(f"Invalid question type: {question_type}. Must be one of {[t.value for t in QuestionType]}")
 
             # Log input data
             logger.debug(f"Resume info: {resume_info}")
@@ -300,9 +303,7 @@ Remember:
 
 
 def test_question_generator():
-    """
-    Test function for QuestionGenerator
-    """
+    """Test function for QuestionGenerator"""
     try:
         logger.info("Starting QuestionGenerator test")
 
