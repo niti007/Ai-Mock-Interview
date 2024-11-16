@@ -4,8 +4,9 @@ langchain-core==0.2.39
 langchain-community==0.2.12
 langchain_groq==0.1.9
 pandas==2.0.2
-spacy
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz
-pypdf2
-python-docx
-pdfplumber
+spacy==3.5.0
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz
+PyPDF2==3.0.1
+python-docx==0.8.11
+pdfplumber==0.10.3
+thinc>=8.1.10
