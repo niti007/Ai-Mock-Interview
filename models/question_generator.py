@@ -23,12 +23,10 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-
 class QuestionType(Enum):
     TECHNICAL = "technical"
     BEHAVIORAL = "behavioral"
     COMPETENCY = "competency_based"
-
 
 class QuestionGenerator:
     def __init__(self):
@@ -53,7 +51,7 @@ class QuestionGenerator:
         # Define prompts for different question types
         self.type_prompts = {
             QuestionType.TECHNICAL: """
-You are an experienced technical interviewer. Generate exactly 15 UNIQUE and DIFFERENT technical interview questions. 
+You are an experienced technical interviewer. Generate exactly 15 UNIQUE and DIFFERENT technical interview questions.
 Ensure these questions are different from previous attempts.
 
 Technical Skills Required: {technical_stack}
@@ -301,7 +299,6 @@ Format the output exactly as follows:
             logger.info("Returning default questions due to error")
             return default_questions
 
-
 def test_question_generator():
     """Test function for QuestionGenerator"""
     try:
@@ -341,7 +338,6 @@ def test_question_generator():
 
     except Exception as e:
         logger.error(f"Error in test_question_generator: {str(e)}", exc_info=True)
-
 
 if __name__ == "__main__":
     test_question_generator()
