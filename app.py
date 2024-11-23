@@ -90,6 +90,8 @@ def process_documents(cv_temp_path, jd_temp_path, cv_parser, jd_parser):
         cv_data = cv_parser.parse_cv(cv_temp_path)
         logger.debug(f"CV parsing result: {cv_data}")
         st.session_state.interview_data['cv_data'] = cv_data
+        if cv_temp_path:
+            st.session_state['persistent_cv_data'] = cv_data  # Store CV data persistently
 
         if jd_temp_path:
             jd_data = jd_parser.parse_job_description(jd_temp_path)
@@ -165,6 +167,8 @@ def display_interview_summary():
         except Exception as e:
             logger.error(f"Failed to recommend resources: {str(e)}", exc_info=True)
             st.error("An error occurred while fetching recommended resources. Please try again later.")
+
+
 def main():
     st.set_page_config(
         page_title="AI Mock Interview Assistant",
@@ -338,13 +342,19 @@ def main():
     elif st.session_state.current_step == 'summary':
         display_interview_summary()
 
-        # Add option to start new interview
+        # Add option to start new interview with modified reset
         if st.button("Start New Interview"):
+            # Store CV data temporarily
+            temp_cv_data = st.session_state.get('persistent_cv_data', None)
             # Reset session state
             for key in list(st.session_state.keys()):
                 if key not in ['question_generator', 'answer_evaluator']:
                     del st.session_state[key]
             initialize_session_state()
+            # Restore CV data
+            if temp_cv_data:
+                st.session_state.interview_data['cv_data'] = temp_cv_data
+                st.session_state.current_step = 'confirm'  # Skip upload step
             st.rerun()
 
 
