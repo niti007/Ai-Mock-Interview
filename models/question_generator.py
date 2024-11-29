@@ -40,7 +40,7 @@ class QuestionGenerator:
         try:
             self.llm = ChatGroq(
                 groq_api_key=self.api_key,
-                model_name="llama-3.2-90b-text-preview",
+                model_name="llama-3.1-70b-versatile",
                 temperature=0.7
             )
             logger.info("Successfully initialized Groq LLM")
@@ -198,7 +198,7 @@ Format the output exactly as follows:
             # Update LLM parameters
             self.llm = ChatGroq(
                 groq_api_key=self.api_key,
-                model_name="llama-3.2-90b-text-preview",
+                model_name="llama-3.1-70b-versatile",
                 temperature=temperature
             )
 
